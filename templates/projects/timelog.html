@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>TimeLog</h1>
+
+<form action="" method="post">
+    {% csrf_token %}
+    
+    <select name="project" required="true">
+        {% for project in projects %}
+        <option value="{{ project.id }}">{{ project.name }}</option>
+        {% endfor %}
+    </select>
+
+    <textarea name="memo" required="true">{{ current_logged.memo }}</textarea>
+
+    <p>
+        {% if is_logged %}
+            <button type="submit" name="stop">Stop</button>
+        {% else %}
+            <button type="submit" name="start">Start</button>
+        {% endif %}
+        
+    </p>
+</form>
+
+<h2>Timesheet today: {{ total_hours_today }}</h2>
+<ul>
+    {% for log in today_timelogs %}
+    <li>{{ log.log }} - {{ log.memo }}</li>
+    {% endfor %}
+</ul>
+
+
+<h2>Timesheet this Week: {{ weekly_hours }}</h2>
+<h4>From {{ week_dates.start_date }} to {{ week_dates.current_date.date }}</h4>
+<ul>
+    {% for log in weekly_timelogs %}
+    <li>{{ log.log }} - {{ log.memo }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

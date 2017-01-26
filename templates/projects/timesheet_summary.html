@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Summary</h1>
+
+
+<form action="" method="get">
+    <input type="text" value="{{ start }}" required="true" name="start">
+    <input type="text" value="{{ end }}" required="true" name="end">
+    <button type="submit">filter</button>
+</form>
+
+{% for user in users %}
+<h2>{{ user.email }} = {{ user.log }}</h2>
+
+{% endfor %}
+
+{% endblock %}
