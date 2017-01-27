@@ -6,13 +6,34 @@
 
 
 <form action="" method="get">
-    <input type="text" value="{{ start }}" required="true" name="start">
-    <input type="text" value="{{ end }}" required="true" name="end">
+    <p>
+        <select name="project">
+            <option value="">All Projects</option>
+            {% for project in projects %}
+            <option value="{{ project.id }}">{{ project.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>
+        <select name="member">
+            <option value="">All Members</option>
+            {% for member in members %}
+            <option value="{{ member.id }}">{{ member.first_name }} {{ member.last_name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p><input type="text" value="{{ start }}" required="true" name="start"> to
+    <input type="text" value="{{ end }}" required="true" name="end"></p>
+
+    <p>
     <button type="submit">filter</button>
+    </p>
 </form>
 
 {% for user in users %}
-<h2>{{ user.email }} = {{ user.log }}</h2>
+<h2>{{ user.first_name }} {{ user.last_name }} = {{ user.log }}</h2>
 
 <h3>Logs: </h3>
 
@@ -28,7 +49,7 @@
     <tbody>
         {% for log in user.timesheets  %}
         <tr>
-            <td>{{ log.start|date:"Y-m-d" }}</td>
+            <td>{{ log.start|date:"Y-m-d h:iA" }}</td>
             <td>{{ log.log }}</td>
             <td>{{ log.memo }}</td>
             <td>{{ log.member.project.name }}</td>

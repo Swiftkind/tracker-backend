@@ -70,10 +70,24 @@ class AdminTemplateView(AdminLoginRequiredMixin,
         week_dates = self.week_date()
         start = data.get('start', week_dates['start_date'])
         end = data.get('end', week_dates['current_date'].date())
+        project = data.get('project', '')
+        member = data.get('member', '')
+        members = Account.objects.filter(is_superuser=False).order_by('first_name')
+        projects = Project.objects.all().order_by('name')
 
-        for account in Account.objects.filter(is_superuser=False):
+        if member:
+            accounts = members.filter(id=member)
+        else:
+            accounts = members
+
+        for account in accounts:
             user_timesheet = self.user_timesheet(user=account)
             timesheets = user_timesheet.filter(start__range=[start, '{} 23:59:59'.format(end)]).order_by('-start')
+
+            # filter by project
+            if project:
+                timesheets = timesheets.filter(member__project__id=project)
+
             account.log = self.total_hours(timesheets)
             account.timesheets = timesheets
             users.append(account)
@@ -82,4 +96,8 @@ class AdminTemplateView(AdminLoginRequiredMixin,
                                         'users': users,
                                         'start': str(start),
                                         'end': str(end),
+                                        'projects': projects,
+                                        'project_selected': project,
+                                        'members': members,
+                                        'member': member
                                     })
