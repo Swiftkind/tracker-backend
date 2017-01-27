@@ -44,11 +44,14 @@ class TimeLogMixin(object):
         if self.is_logged(user):
             self.time_out(user)
         else:
-            member = ProjectMember.objects.get(account=user,
-                                               project=project)
-            Log.objects.create(member=member,
-                               start=timezone.now(),
-                               memo=memo)
+            try:
+                member = ProjectMember.objects.get(account=user,
+                                                   project=project)
+                Log.objects.create(member=member,
+                                   start=timezone.now(),
+                                   memo=memo)
+            except ProjectMember.DoesNotExist:
+                raise ProjectMember.DoesNotExist('No access for the project')
 
     def current_logged(self, user):
         """Get user current log
