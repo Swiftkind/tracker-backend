@@ -11,8 +11,9 @@ from .models import (
 
 
 class AdminLoginRequiredMixin(LoginRequiredMixin):
+
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated and not request.user.is_superuser:
+        if not request.user.is_superuser:
             return self.handle_no_permission()
         return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
@@ -68,7 +69,7 @@ class TimeSheetMixin(object):
         """List user projects
         """
         projects = ProjectMember.objects.filter(account=user)
-        return Project.objects.filter(id__in=projects.values_list('id', flat=True))
+        return Project.objects.filter(id__in=projects.values_list('project__id', flat=True))
 
     def total_hours(self, queryset):
         """Get total hours

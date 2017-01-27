@@ -28,7 +28,7 @@ class TimeLogTemplateView(LoginRequiredMixin,
                                                 start__day=today.day
                                             ).order_by('-start')
         week_dates = self.week_date()
-        weekly_timesheet = user_timesheet.filter(start__range=[week_dates['start_date'], week_dates['current_date']])
+        weekly_timesheet = user_timesheet.filter(start__range=[week_dates['start_date'], week_dates['current_date']]).order_by('-start')
         context = {
             'is_logged': self.is_logged(request.user),
             'projects': self.user_projects(request.user),
@@ -73,7 +73,7 @@ class AdminTemplateView(AdminLoginRequiredMixin,
 
         for account in Account.objects.filter(is_superuser=False):
             user_timesheet = self.user_timesheet(user=account)
-            timesheets = user_timesheet.filter(start__range=[start, '{} 23:59:59'.format(end)])
+            timesheets = user_timesheet.filter(start__range=[start, '{} 23:59:59'.format(end)]).order_by('-start')
             account.log = self.total_hours(timesheets)
             account.timesheets = timesheets
             users.append(account)

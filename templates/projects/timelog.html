@@ -9,12 +9,12 @@
     
     <select name="project" required="true">
         {% for project in projects %}
-        <option value="{{ project.id }}">{{ project.name }}</option>
+        <option value="{{ project.id }}" {% if current_logged.member.project.id == project.id %}selected="selected"{% endif %}>{{ project.name }}</option>
         {% endfor %}
     </select>
-
+    <br /><br />
     <textarea name="memo" required="true">{{ current_logged.memo }}</textarea>
-
+    <br />
     <p>
         {% if is_logged %}
             <button type="submit" name="stop">Stop</button>
@@ -26,9 +26,10 @@
 </form>
 
 <h2>Timesheet today: {{ total_hours_today }}</h2>
+
 <ul>
     {% for log in today_timelogs %}
-    <li>{{ log.log }} - {{ log.memo }}</li>
+        <li>{{ log.log }} - {{ log.memo }} - {{ log.member.project.name }}</li>
     {% endfor %}
 </ul>
 
@@ -37,7 +38,7 @@
 <h4>From {{ week_dates.start_date }} to {{ week_dates.current_date.date }}</h4>
 <ul>
     {% for log in weekly_timelogs %}
-    <li>{{ log.log }} - {{ log.memo }}</li>
+    <li>{{ log.start|date:"Y-m-d" }} - {{ log.log }} - {{ log.memo }}</li>
     {% endfor %}
 </ul>
 
