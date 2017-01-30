@@ -2,5 +2,9 @@
 *.sqlite3
 *.db
 media/
-static/
 local_settings.py
+static/node_modules/
+static/dist/
+static/app/build/
+static/app/css/
+static/app/js/
