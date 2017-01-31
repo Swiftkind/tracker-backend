@@ -19,22 +19,6 @@ gulp.task('watch', function(){
     gulp.watch('app/*.html', ['useref']);
 });
 
-gulp.task('useref', function(){
-    return gulp.src('app/*.html')
-        .pipe(useref())
-        .pipe(gulp.dest('dist'))
-
-});
-
-gulp.task('fonts', function(){
-    return gulp.src('app/fonts/**/*')
-        .pipe(gulp.dest('dist/fonts'))
-});
-
-gulp.task('clean:dist', function(){
-    return del.sync('dist');
-});
-
 gulp.task('babel', function(){
     return gulp.src('app/es6/*.js')
         .pipe(babel({
@@ -45,7 +29,7 @@ gulp.task('babel', function(){
 
 gulp.task('build', function(callback){
     runSequence('babel',
-                ['fonts', 'sass', 'useref'],
+                ['fonts', 'sass'],
                 callback
             )
 });

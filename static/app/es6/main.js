@@ -16,5 +16,3 @@ class Dog extends Animal {
 
 var d = new Dog('Mitzie');
 d.speak();
-console.log('hello');
-console.log('hello world');
