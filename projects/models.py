@@ -1,5 +1,6 @@
 import datetime
 
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 
@@ -32,6 +33,9 @@ class ProjectMember(models.Model):
     def __str__(self):
         return '[{}] {}'.format(self.project.name, self.account)
 
+    class Meta:
+        unique_together = ('account', 'project')
+
 
 class Log(models.Model):
     member = models.ForeignKey('ProjectMember')
@@ -44,10 +48,9 @@ class Log(models.Model):
     def seconds(self):
         """Get the difference between start and end
         """
-        if self.end:
-            result = self.end - self.start
-            return result.seconds
-        return 0
+        end = self.end or timezone.now()
+        result = end - self.start
+        return result.seconds
 
     @property
     def log(self):

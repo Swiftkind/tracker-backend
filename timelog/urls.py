@@ -18,11 +18,16 @@ from django.contrib import admin
 
 from accounts.views import DashboardView
 
+from projects.urls import api_urlpatterns
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     url(r'^$', DashboardView.as_view(), name="main"),
 
     url(r'^', include('accounts.urls')),
-    url(r'^', include('projects.urls')),
+    url(r'^projects/', include('projects.urls')),
+
+    # include project endpoints
+    url(r'^api/', include(api_urlpatterns, namespace='api')),
 ]

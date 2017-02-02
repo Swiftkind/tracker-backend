@@ -4,10 +4,26 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
+from rest_framework.response import Response
+from rest_framework import viewsets
+
 from accounts.models import Account
 
-from .mixins import TimeSheetMixin, TimeLogMixin, AdminLoginRequiredMixin
-from .models import Project
+from .permissions import AdminPermission
+from .mixins import (TimeSheetMixin,
+                     TimeLogMixin,
+                     AdminLoginRequiredMixin
+                    )
+from .models import (
+                     Project,
+                     Company,
+                     Log,
+                     ProjectMember
+                    )
+from .serializers import (CompanySerializer,
+                          ProjectSerializer,
+                          ProjectMemberSerializer,
+                          LogSerializer)
 
 
 class TimeLogTemplateView(LoginRequiredMixin,
@@ -15,6 +31,8 @@ class TimeLogTemplateView(LoginRequiredMixin,
                           TimeSheetMixin,
                           TemplateView):
     """User time-in and time-out
+
+    TODO: remove once api is working
     """
 
     template_name = 'projects/timelog.html'
@@ -59,6 +77,8 @@ class AdminTemplateView(AdminLoginRequiredMixin,
                         TimeLogMixin,
                         TimeSheetMixin,
                         TemplateView):
+    """To be remove
+    """
 
     template_name = "projects/timesheet_summary.html"
 
@@ -101,3 +121,95 @@ class AdminTemplateView(AdminLoginRequiredMixin,
                                         'members': members,
                                         'member': member
                                     })
+
+
+class CompanyReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    """Handle company endpoints
+    """
+
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+
+class ProjectReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    """Handle project readonly endpoints
+    """
+
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+    def get_queryset(self):
+        """Return list of projects by user
+        """
+        queryset = self.queryset.filter(projectmember__account=self.request.user)
+        return queryset
+
+
+class ProjectMemberReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = ProjectMember.objects.all()
+    serializer_class = ProjectMemberSerializer
+
+    def get_queryset(self):
+        """Return list of members by project
+        """
+        # Get the projects access by request.user
+        projects = Project.objects.filter(projectmember__account=self.request.user)
+        queryset = self.queryset.filter(project__in=projects)
+        return queryset
+
+
+class LogReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    """Handle log transactions
+    """
+
+    queryset = Log.objects.all()
+    serializer_class = LogSerializer
+
+    def get_queryset(self):
+        """Return list of logs
+        """
+
+        if self.request.user.is_superuser is False:
+            # Filter by account if request.user is not superuser
+            self.queryset = self.queryset.filter(member__account=self.request.user)
+
+        return self.queryset
+
+
+class LogViewSet(viewsets.ViewSet, TimeLogMixin):
+    """Handle timein, timeout and display last timein activity
+    """
+    serializer_class = LogSerializer
+
+    def current_log(self, request):
+        """Return current activity
+
+        method = GET
+        """
+        serializer = self.serializer_class(self.current_logged(request.user))
+        return Response(serializer.data)
+
+    def timelog(self, request):
+        """Time-in and Time-out
+
+        method = POST
+
+        data values:
+            project - project id
+            memo - text, leave blank for timeout
+            timein - true or false
+        """
+
+        data = request.data
+        project = Project.objects.get(id=data['project'])
+
+        if data['timein'] == True:
+            self.time_in(user=request.user,
+                     project=project,
+                     memo=data['memo'])
+        else:
+            self.time_out(request.user)
+
+        serializer = self.serializer_class(self.current_logged(request.user))
+        return Response(serializer.data)

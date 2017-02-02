@@ -40,6 +40,11 @@ INSTALLED_APPS = [
 
     'accounts',
     'projects',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -97,6 +102,21 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    'COERCE_DECIMAL_TO_STRING': False,
+}
 
 
 # Internationalization
