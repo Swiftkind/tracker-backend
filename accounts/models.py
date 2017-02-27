@@ -9,6 +9,7 @@ from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
+from .signals import create_auth_token
 
 class AccountManager(BaseUserManager):
     """ Manager class that contains methods for
