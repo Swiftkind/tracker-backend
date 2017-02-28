@@ -1,5 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-
 from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,7 +10,7 @@ class AccountAPI(ViewSet):
     """
     permission_classes = (AllowAny,)
 
-    def register(self, request, *args, **kwargs):
+    def register(self, *args, **kwargs):
         """ user register
         """
         serializer = SignupSerializer(data=self.request.data)
