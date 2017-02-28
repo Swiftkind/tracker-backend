@@ -33,7 +33,17 @@ class UserAdmin(admin.ModelAdmin):
     change_user_password_template = None
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('Personal info'), {'fields': (
+                'first_name',
+                'last_name', 
+                'email',
+                'birthdate',
+                'gender',
+                'contact',
+                'address',
+                'position',
+                'job_title',
+            )}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                     'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login',)}),
