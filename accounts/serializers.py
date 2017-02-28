@@ -1,3 +1,5 @@
+from django.contrib.auth import authenticate
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -46,3 +48,29 @@ class SignupSerializer(serializers.ModelSerializer):
         account.set_password(validated_data['password'])
         account.save()
         return account
+
+
+class LoginSerializer(serializers.Serializer):
+    """Login serializer
+    """
+    user_cache = None
+    error_msg = "Email or Password is not correct!"
+
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        """check user's credentials
+        """
+        email = data.get('email')
+        password = data.get('password')
+
+        if not (email or password):
+            raise serializers.ValidationError(self.error_msg)
+
+        self.user_cache = authenticate(email=email, password=password)
+        if self.user_cache is None or \
+           not self.user_cache.is_active:
+            raise serializers.ValidationError(self.error_msg)
+
+        return data

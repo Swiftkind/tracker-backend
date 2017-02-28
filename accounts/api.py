@@ -1,8 +1,11 @@
+from django.contrib.auth import login, logout
+
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .serializers import SignupSerializer
+from .serializers import SignupSerializer, LoginSerializer
 
 
 class AccountAPI(ViewSet):
@@ -18,3 +21,22 @@ class AccountAPI(ViewSet):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+class LoginAPI(ViewSet):
+    """ Login API
+    """
+    authentication_classes = (BasicAuthentication,)
+    permission_classes = (AllowAny,)
+
+    def login(self, *args, **kwargs):
+        serializer = LoginSerializer(data=self.request.data)
+        if serializer.is_valid():
+            login(self.request, serializer.user_cache)
+
+            return Response(serializer.data, status=204)
+        return Response(serializer.errors, status=400)
+
+    def logout(self, *args, **kwargs):
+        logout(self.request)
+        return Response(status=204)
