@@ -74,3 +74,37 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(self.error_msg)
 
         return data
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    """Account serializer
+    """
+
+    class Meta:
+        model = Account
+        fields = (
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'birthdate',
+            'gender',
+            'contact',
+            'address',
+            'position',
+            'job_title',
+            'profile_photo',
+        )
+        read_only_fields=('profile_photo',)
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    """ Reset password serializer 
+    """
+    old_password = serializers.CharField()
+    new_password = serializers.CharField()
+
+    def validate_new_password(self, value):
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least %d characters long." % 8)
+        return value
