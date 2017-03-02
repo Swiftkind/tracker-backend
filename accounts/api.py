@@ -1,5 +1,4 @@
 from django.contrib.auth import login, logout
-from django.shortcuts import get_object_or_404
 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.viewsets import ViewSet
@@ -55,7 +54,5 @@ class AccountProfileAPI(ViewSet):
     def detail(self, *args, **kwargs):
         """ profile details
         """
-        account = get_object_or_404(Account, id=kwargs['user_id'])
-        serializer = AccountSerializer(account)
-
+        serializer = AccountSerializer(self.request.user)
         return Response(serializer.data, status=200)

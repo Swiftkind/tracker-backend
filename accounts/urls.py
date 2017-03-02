@@ -37,6 +37,6 @@ account_urlpatterns = [
     url(r'^login/$', login_url, name="user_login"),
     url(r'^logout/$', logout_url, name="user_logout"),
 
-    url(r'^user/(?P<user_id>[0-9]+)/detail/$', account_detail_url, name='user_details'),
+    url(r'^user/detail/$', account_detail_url, name='user_details'),
 
 ]
