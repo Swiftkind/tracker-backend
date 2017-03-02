@@ -1,11 +1,18 @@
 from django.contrib.auth import login, logout
+from django.shortcuts import get_object_or_404
 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .serializers import SignupSerializer, LoginSerializer
+from .serializers import (
+            SignupSerializer, 
+            LoginSerializer,
+            AccountSerializer,
+        )
+
+from .models import Account
 
 
 class AccountAPI(ViewSet):
@@ -40,3 +47,15 @@ class LoginAPI(ViewSet):
     def logout(self, *args, **kwargs):
         logout(self.request)
         return Response(status=204)
+
+
+class AccountProfileAPI(ViewSet):
+    """ User profile 
+    """
+    def detail(self, *args, **kwargs):
+        """ profile details
+        """
+        account = get_object_or_404(Account, id=kwargs['user_id'])
+        serializer = AccountSerializer(account)
+
+        return Response(serializer.data, status=200)
