@@ -5,13 +5,21 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .serializers import SignupSerializer, LoginSerializer
+from .serializers import SignupSerializer, LoginSerializer, AccountSerializer
 
 
 class AccountAPI(ViewSet):
     """Account API
     """
     permission_classes = (AllowAny,)
+
+    def detail(self, *args, **kwargs):
+        """logged in user data
+        """
+        if self.request.user.is_authenticated():
+            serializer = AccountSerializer(self.request.user)
+            return Response(serializer.data, status=200)
+        return Response(status=204)
 
     def register(self, *args, **kwargs):
         """ user register

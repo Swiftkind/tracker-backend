@@ -50,6 +50,25 @@ class SignupSerializer(serializers.ModelSerializer):
         return account
 
 
+class AccountSerializer(serializers.ModelSerializer):
+    """User account serializer
+    """
+    class Meta:
+        model = Account
+        fields = (
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'birthdate',
+            'gender',
+            'contact',
+            'address',
+            'position',
+            'job_title',
+        )
+
+
 class LoginSerializer(serializers.Serializer):
     """Login serializer
     """
