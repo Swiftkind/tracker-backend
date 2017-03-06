@@ -43,6 +43,7 @@ class UserAdmin(admin.ModelAdmin):
                 'address',
                 'position',
                 'job_title',
+                'profile_photo',
             )}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                     'user_permissions')}),
