@@ -9,7 +9,11 @@ from .views import (
     SignupView,
 )
 
-from .api import AccountAPI, LoginAPI
+from .api import (
+    AccountAPI, 
+    LoginAPI, 
+    AccountProfileAPI,
+)
 
 urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name="login"),
@@ -20,6 +24,8 @@ urlpatterns = [
 ]
 
 signup_url = AccountAPI.as_view({'post': 'register'})
+account_detail_url = AccountProfileAPI.as_view({'get': 'detail'})
+
 login_url = LoginAPI.as_view({'post': 'login'})
 logout_url = LoginAPI.as_view({'post': 'logout'})
 
@@ -30,4 +36,7 @@ account_urlpatterns = [
     url(r'^signup/$', signup_url, name='register'),
     url(r'^login/$', login_url, name="user_login"),
     url(r'^logout/$', logout_url, name="user_logout"),
+
+    url(r'^user/detail/$', account_detail_url, name='user_details'),
+
 ]

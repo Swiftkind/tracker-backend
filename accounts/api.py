@@ -5,7 +5,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from .serializers import SignupSerializer, LoginSerializer
+from .serializers import (
+            SignupSerializer, 
+            LoginSerializer,
+            AccountSerializer,
+        )
+
+from .models import Account
 
 
 class AccountAPI(ViewSet):
@@ -40,3 +46,13 @@ class LoginAPI(ViewSet):
     def logout(self, *args, **kwargs):
         logout(self.request)
         return Response(status=204)
+
+
+class AccountProfileAPI(ViewSet):
+    """ User profile 
+    """
+    def detail(self, *args, **kwargs):
+        """ profile details
+        """
+        serializer = AccountSerializer(self.request.user)
+        return Response(serializer.data, status=200)

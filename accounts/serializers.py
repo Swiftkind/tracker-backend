@@ -74,3 +74,25 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(self.error_msg)
 
         return data
+
+
+class AccountSerializer(serializers.ModelSerializer):
+    """Account serializer
+    """
+
+    class Meta:
+        model = Account
+        fields = (
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'birthdate',
+            'gender',
+            'contact',
+            'address',
+            'position',
+            'job_title',
+            'profile_photo',
+        )
+        read_only_fields=('profile_photo',)
