@@ -66,6 +66,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'address',
             'position',
             'job_title',
+            'is_admin',
         )
 
 

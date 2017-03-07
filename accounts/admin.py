@@ -44,7 +44,7 @@ class UserAdmin(admin.ModelAdmin):
                 'position',
                 'job_title',
             )}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+        (_('Permissions'), {'fields': ('is_admin', 'is_active', 'is_staff', 'is_superuser',
                                     'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login',)}),
     )
