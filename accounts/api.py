@@ -30,6 +30,18 @@ class AccountAPI(ViewSet):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+    def update(self, *args, **kwargs):
+        """ user update
+        """
+        if self.request.user.is_authenticated():
+            serializer = AccountSerializer(self.request.user, data=self.request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=200)
+            return Response(serializer.errors, status=400)
+        return Response(status=401)
+
+
 
 class LoginAPI(ViewSet):
     """ Login API
