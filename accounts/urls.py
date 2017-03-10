@@ -20,13 +20,14 @@ urlpatterns = [
 ]
 
 account_url = AccountAPI.as_view({'post': 'register',
-                                  'get': 'detail'
+                                  'get': 'detail',
+                                  'put': 'update',
                                 })
 login_url = LoginAPI.as_view({'post': 'login'})
 logout_url = LoginAPI.as_view({'get': 'logout'})
 
 account_urlpatterns = [
-     # jwt token
+    # jwt token
     url(r'^token/', obtain_jwt_token),
 
     url(r'^account/$', account_url, name='account'),
