@@ -11,7 +11,10 @@ from .views import (
                     ProjectMemberReadOnlyViewSet,
                     LogViewSet,
                     LogReadOnlyViewSet,
-                    CompanyReadOnlyViewSet
+                    CompanyReadOnlyViewSet,
+                    AddMemberViewset,
+                    ProjectMembersViewset,
+                    ProjectsViewset
                 )
 
 urlpatterns = [
@@ -29,5 +32,17 @@ router.register(r'company', CompanyReadOnlyViewSet)
 api_urlpatterns = router.urls
 
 api_urlpatterns += [
-    url(r'^timelog', LogViewSet.as_view({'get': 'current_log', 'post': 'timelog'}))
+    url(r'^timelog/', LogViewSet.as_view({
+        'get': 'current_log',
+        'post': 'timelog',
+        })),
+    url(r'^invite/', AddMemberViewset.as_view({
+        'post': 'invite',
+    }), name="invite"),
+    url(r'^project-list/', ProjectsViewset.as_view({
+        'get': 'list',
+    }), name="projects"),
+    url(r'^members/', ProjectMembersViewset.as_view({
+        'get': 'list',
+    }), name="members")
 ]

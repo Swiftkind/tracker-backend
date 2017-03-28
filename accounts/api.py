@@ -14,6 +14,7 @@ from .serializers import (
                     ProfilePhotoSerializer
                 )
 
+from .models import Account
 
 class AccountAPI(ViewSet):
     """Account API
@@ -48,6 +49,12 @@ class AccountAPI(ViewSet):
             return Response(serializer.errors, status=400)
         return Response(status=401)
 
+    def list(self, *args, **kwargs):
+        """all accounts data
+        """
+        accounts = Account.objects.filter(is_admin=False)
+        serializer = AccountSerializer(accounts, many=True)
+        return Response(serializer.data, status=200)
 
 class LoginAPI(ViewSet):
     """ Login API

@@ -36,4 +36,7 @@ account_urlpatterns = [
     url(r'^login/$', login_url, name="user_login"),
     url(r'^logout/$', logout_url, name="user_logout"),
     url(r'^photo/$', profile_photo, name="profile_photo"),
+    url(r'^accounts/', AccountAPI.as_view({
+        'get': 'list',
+    }), name="accounts")
 ]

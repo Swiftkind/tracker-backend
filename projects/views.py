@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
@@ -12,7 +13,8 @@ from accounts.models import Account
 from .permissions import AdminPermission
 from .mixins import (TimeSheetMixin,
                      TimeLogMixin,
-                     AdminLoginRequiredMixin
+                     AdminLoginRequiredMixin,
+                     AddMemberMixin
                     )
 from .models import (
                      Project,
@@ -144,6 +146,13 @@ class ProjectReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = self.queryset.filter(projectmember__account=self.request.user)
         return queryset
 
+class ProjectsViewset(viewsets.ViewSet):
+
+    def list(self, *args, **kwargs):
+        projects = Project.objects.filter(account=self.request.user)
+        serializer =ProjectSerializer(projects, many=True)
+        return Response (serializer.data, status=200)
+
 
 class ProjectMemberReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
 
@@ -157,6 +166,13 @@ class ProjectMemberReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
         projects = Project.objects.filter(projectmember__account=self.request.user)
         queryset = self.queryset.filter(project__in=projects)
         return queryset
+
+class ProjectMembersViewset(viewsets.ViewSet):
+
+    def list(self, *args, **kwargs):
+        members = ProjectMember.objects.all()
+        serializer = ProjectMemberSerializer(members, many=True)
+        return Response (serializer.data, status=200)
 
 
 class LogReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
@@ -177,7 +193,7 @@ class LogReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
         return self.queryset
 
 
-class LogViewSet(viewsets.ViewSet, TimeLogMixin):
+class LogViewSet(TimeLogMixin, viewsets.ViewSet):
     """Handle timein, timeout and display last timein activity
     """
     serializer_class = LogSerializer
@@ -213,3 +229,18 @@ class LogViewSet(viewsets.ViewSet, TimeLogMixin):
 
         serializer = self.serializer_class(self.current_logged(request.user))
         return Response(serializer.data)
+
+
+class AddMemberViewset(AddMemberMixin, viewsets.ViewSet):
+    """Handles sending of invites
+    """
+    def invite(self, *args, **kwargs):
+        data = self.request.data
+        data['url'] = "http://127.0.0.1:8000/#/signup/"
+
+        if Account.objects.filter(email=data['member']).exists():
+            self.add_to_project(data)
+            data['url'] = settings.SITE_URL
+
+        self.send_invite(data)
+        return Response(data, status=200)
