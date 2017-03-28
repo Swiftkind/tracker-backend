@@ -63,6 +63,7 @@ MIDDLEWARE = [
 #list of allowed domain that can access APIs
 CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
+    '127.0.0.1:8000'
 )
 
 ROOT_URLCONF = 'timelog.urls'
@@ -143,6 +144,19 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+##################
+# E-MAIL SENDING #
+##################
+DEFAULT_FROM_EMAIL = 'Swift Tracker <swiftkind.test@gmail.com>'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'swiftkind.test@gmail.com'
+EMAIL_HOST_PASSWORD = 'gwapoako123'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+
+SITE_URL = 'http://127.0.0.1:8000/#/'
 
 
 # Static files (CSS, JavaScript, Images)

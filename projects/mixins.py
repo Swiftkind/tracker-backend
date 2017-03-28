@@ -1,8 +1,12 @@
 import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import EmailMultiAlternatives
+from django.template import Context
+from django.template.loader import get_template
 from django.utils import timezone
 
+from accounts.models import Account
 from .models import (
                         Log,
                         Project,
@@ -104,3 +108,33 @@ class TimeSheetMixin(object):
             logs = logs.filter(member__project=project)
 
         return logs
+
+class AddMemberMixin(object):
+    """manages sending of invites and adding user to project
+    """
+    def add_to_project(self, data):
+        """add to project
+        """
+        account = Account.objects.get(email=data['member'])
+        project = Project.objects.get(id=data['id'])
+        return ProjectMember.objects.create(account=account, project=project)
+
+
+    def send_invite(self, data):
+        """send invite
+        """
+        subject = "SwiftTracker Project Invitation"
+        html = get_template('projects/invitation.html')
+        admin = Account.objects.get(id=data['account'])
+
+        context_data = Context({
+                    'admin': admin,
+                    'project': data['name'],
+                    'url': data['url']
+                    })
+
+        email_to = data['member']
+        html_content = html.render(context_data)
+        msg = EmailMultiAlternatives(subject, to=[email_to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
