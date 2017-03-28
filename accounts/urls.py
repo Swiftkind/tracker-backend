@@ -9,7 +9,7 @@ from .views import (
     SignupView,
 )
 
-from .api import AccountAPI, LoginAPI
+from .api import AccountAPI, LoginAPI, ProfilePhotoAPI
 
 urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name="login"),
@@ -26,6 +26,8 @@ account_url = AccountAPI.as_view({'post': 'register',
 login_url = LoginAPI.as_view({'post': 'login'})
 logout_url = LoginAPI.as_view({'get': 'logout'})
 
+profile_photo = ProfilePhotoAPI.as_view({'put': 'photo'})
+
 account_urlpatterns = [
     # jwt token
     url(r'^token/', obtain_jwt_token),
@@ -33,4 +35,5 @@ account_urlpatterns = [
     url(r'^account/$', account_url, name='account'),
     url(r'^login/$', login_url, name="user_login"),
     url(r'^logout/$', logout_url, name="user_logout"),
+    url(r'^photo/$', profile_photo, name="profile_photo"),
 ]

@@ -4,8 +4,15 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.viewsets import ViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
+from rest_framework.views import APIView
 
-from .serializers import SignupSerializer, LoginSerializer, AccountSerializer
+from .serializers import (
+                    SignupSerializer, 
+                    LoginSerializer,
+                    AccountSerializer, 
+                    ProfilePhotoSerializer
+                )
 
 
 class AccountAPI(ViewSet):
@@ -17,7 +24,7 @@ class AccountAPI(ViewSet):
         """logged in user data
         """
         if self.request.user.is_authenticated():
-            serializer = AccountSerializer(self.request.user)
+            serializer = AccountSerializer(self.request.user, context={'request': self.request})
             return Response(serializer.data, status=200)
         return Response(status=204)
 
@@ -34,13 +41,12 @@ class AccountAPI(ViewSet):
         """ user update
         """
         if self.request.user.is_authenticated():
-            serializer = AccountSerializer(self.request.user, data=self.request.data)
+            serializer = AccountSerializer(self.request.user, data=self.request.data, context={'request': self.request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=200)
             return Response(serializer.errors, status=400)
         return Response(status=401)
-
 
 
 class LoginAPI(ViewSet):
@@ -60,3 +66,16 @@ class LoginAPI(ViewSet):
     def logout(self, *args, **kwargs):
         logout(self.request)
         return Response(status=204)
+
+
+class ProfilePhotoAPI(ViewSet):
+    """ uplaod profile photo
+    """
+    parser_classes = (FormParser, MultiPartParser)
+
+    def photo(self, *args, **kwargs):
+        serializer = ProfilePhotoSerializer(self.request.user, data=self.request.data, context={'request': self.request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
