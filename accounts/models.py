@@ -41,6 +41,9 @@ class AccountManager(BaseUserManager):
         return account
 
 
+def profile_photos_location(instance, filename):
+    return "account/photos/%s/%s" %(instance.id, filename)
+
 class Account(AbstractBaseUser, PermissionsMixin):
     """ Custom model for the account user. it is
         an override from the `django.auth.models.User`
@@ -72,6 +75,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     position = models.CharField(max_length=35, choices=POSITION, default=DEVELOPER)
     job_title = models.CharField(max_length=100, null=True, blank=True)
     employment_startdate = models.DateField(blank=True, null=True)
+    profile_photo = models.ImageField(upload_to=profile_photos_location, null=True, blank=True)
 
     date_joined = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

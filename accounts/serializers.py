@@ -53,6 +53,15 @@ class SignupSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     """User account serializer
     """
+    profile_photo = serializers.SerializerMethodField()
+
+    def get_profile_photo(self, obj):
+        request = self.context.get('request')
+        photo = obj.profile_photo
+        if not photo:
+            return None
+        return request.build_absolute_uri(photo.url)
+
     class Meta:
         model = Account
         fields = (
@@ -67,7 +76,9 @@ class AccountSerializer(serializers.ModelSerializer):
             'position',
             'job_title',
             'is_admin',
+            'profile_photo',
         )
+        read_only_fields = ('profile_photo',)
 
 
 class LoginSerializer(serializers.Serializer):
@@ -90,7 +101,20 @@ class LoginSerializer(serializers.Serializer):
 
         self.user_cache = authenticate(email=email, password=password)
         if self.user_cache is None or \
-           not self.user_cache.is_active:
+            not self.user_cache.is_active:
             raise serializers.ValidationError(self.error_msg)
 
         return data
+
+
+class ProfilePhotoSerializer(serializers.ModelSerializer):
+    """ profile photo serializer
+    """
+    class Meta:
+        model = Account
+        fields = ('profile_photo',)
+
+    def update(self, instance, validated_data):
+        instance.profile_photo = validated_data.get('profile_photo', instance.profile_photo)
+        instance.save()
+        return instance
