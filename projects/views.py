@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 
 from accounts.models import Account
+from accounts.serializers import AccountSerializer
 
 from .permissions import AdminPermission
 from .mixins import (TimeSheetMixin,
@@ -178,6 +179,18 @@ class ProjectMembersViewset(viewsets.ViewSet):
         serializer = ProjectMemberSerializer(members, many=True, context={'request': self.request})
         return Response (serializer.data, status=200)
 
+    def none_members(self, *args, **kwargs):
+        """accounts of none project member
+        """
+        projects = self.request.data
+        accounts = Account.objects.all()
+        for account in accounts:
+            for project in projects:
+                if account.id == project['member']['id']:
+                    accounts = accounts.exclude(id=project['member']['id'])
+        serializer = AccountSerializer(accounts, many=True)
+        return Response(serializer.data, status=200)
+
 
 class LogReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     """Handle log transactions
@@ -240,11 +253,13 @@ class AddMemberViewset(AddMemberMixin, viewsets.ViewSet):
     """
     def invite(self, *args, **kwargs):
         data = self.request.data
-        data['url'] = "http://127.0.0.1:8000/#/signup/"
-
-        if Account.objects.filter(email=data['member']).exists():
+        try:
+            Account.objects.get(email=data['member']['email'])
             self.add_to_project(data)
             data['url'] = settings.SITE_URL
+        except Account.DoesNotExist:
+            self.save_to_draft(data)
+            data['url'] = settings.SIGNUP_URL
 
         self.send_invite(data)
         return Response(data, status=200)

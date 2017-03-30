@@ -156,6 +156,7 @@ EMAIL_HOST_PASSWORD = 'gwapoako123'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 
+SIGNUP_URL = 'http://127.0.0.1:8000/#/signup/'
 SITE_URL = 'http://127.0.0.1:8000/#/'
 
 

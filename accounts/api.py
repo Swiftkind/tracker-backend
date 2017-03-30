@@ -16,6 +16,9 @@ from .serializers import (
 
 from .models import Account
 
+from projects.models import DraftProjectMember, ProjectMember
+
+
 class AccountAPI(ViewSet):
     """Account API
     """
@@ -34,7 +37,13 @@ class AccountAPI(ViewSet):
         """
         serializer = SignupSerializer(data=self.request.data)
         if serializer.is_valid():
-            serializer.save()
+            account = serializer.save()
+
+            members = DraftProjectMember.objects.filter(email=account.email)
+            if members.exists():
+                for member in members:
+                    ProjectMember.objects.create(account=account, project=member.project)
+                    member.delete()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
