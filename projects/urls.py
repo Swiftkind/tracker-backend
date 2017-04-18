@@ -14,7 +14,8 @@ from .views import (
                     CompanyReadOnlyViewSet,
                     AddMemberViewset,
                     ProjectMembersViewset,
-                    ProjectsViewset
+                    ProjectsViewset,
+                    MemberLogsAPI
                 )
 
 urlpatterns = [
@@ -42,7 +43,10 @@ api_urlpatterns += [
     url(r'^project-list/', ProjectsViewset.as_view({
         'get': 'list',
     }), name="projects"),
-    url(r'^members/', ProjectMembersViewset.as_view({
+    url(r'^members/$', ProjectMembersViewset.as_view({
         'get': 'list',
-    }), name="members")
+    }), name="members"),
+    url(r'^members/logs/$', MemberLogsAPI.as_view({
+        'get': 'logs',
+    }), name="member_logs")
 ]
