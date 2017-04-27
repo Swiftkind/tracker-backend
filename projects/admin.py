@@ -4,7 +4,8 @@ from .models import (
                         Company,
                         Project,
                         ProjectMember,
-                        Log
+                        Log,
+                        DraftProjectMember
                     )
 
 
@@ -15,12 +16,14 @@ class CompanyAdmin(admin.ModelAdmin):
 class ProjectMemberInline(admin.TabularInline):
     model = ProjectMember
 
+class DraftProjectMemberInline(admin.TabularInline):
+    model = DraftProjectMember
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'company', 'account')
     search_fields = ('name', 'company', 'account')
 
-    inlines = (ProjectMemberInline,)
+    inlines = (ProjectMemberInline, DraftProjectMemberInline,)
 
 
 class LogAdmin(admin.ModelAdmin):

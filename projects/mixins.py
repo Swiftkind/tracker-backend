@@ -10,7 +10,8 @@ from accounts.models import Account
 from .models import (
                         Log,
                         Project,
-                        ProjectMember
+                        ProjectMember,
+                        DraftProjectMember
                     )
 
 
@@ -112,13 +113,19 @@ class TimeSheetMixin(object):
 class AddMemberMixin(object):
     """manages sending of invites and adding user to project
     """
+    def save_to_draft (self, data):
+        """save data as draft for unregistered email
+        """
+        email = data['member']['email']
+        project = Project.objects.get(id=data['id'])
+        return DraftProjectMember.objects.create(email=email, project=project)
+
     def add_to_project(self, data):
         """add to project
         """
-        account = Account.objects.get(email=data['member'])
+        account = Account.objects.get(id=data['member']['id'])
         project = Project.objects.get(id=data['id'])
         return ProjectMember.objects.create(account=account, project=project)
-
 
     def send_invite(self, data):
         """send invite
@@ -133,7 +140,7 @@ class AddMemberMixin(object):
                     'url': data['url']
                     })
 
-        email_to = data['member']
+        email_to = data['member']['email']
         html_content = html.render(context_data)
         msg = EmailMultiAlternatives(subject, to=[email_to])
         msg.attach_alternative(html_content, "text/html")

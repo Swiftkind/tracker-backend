@@ -45,6 +45,7 @@ api_urlpatterns += [
     }), name="projects"),
     url(r'^members/$', ProjectMembersViewset.as_view({
         'get': 'list',
+        'post': 'none_members',
     }), name="members"),
     url(r'^members/logs/$', MemberLogsAPI.as_view({
         'get': 'logs',

@@ -57,3 +57,14 @@ class Log(models.Model):
         """Get the time spent for the log
         """
         return str(datetime.timedelta(seconds=self.seconds))
+
+
+class DraftProjectMember(models.Model):
+    email = models.EmailField(max_length=225, blank=False, null=False)
+    project = models.ForeignKey('Project')
+
+    def __str__(self):
+        return '[{}] {}'.format(self.project.name, self.email)
+
+    class Meta:
+        unique_together = ('email', 'project')
