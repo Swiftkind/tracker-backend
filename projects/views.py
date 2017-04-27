@@ -22,10 +22,14 @@ from .models import (
                      Log,
                      ProjectMember
                     )
-from .serializers import (CompanySerializer,
+
+from .serializers import (
+                          CompanySerializer,
                           ProjectSerializer,
                           ProjectMemberSerializer,
-                          LogSerializer)
+                          LogSerializer,
+                          MemberLogSerializer
+                        )
 
 
 class TimeLogTemplateView(LoginRequiredMixin,
@@ -171,7 +175,7 @@ class ProjectMembersViewset(viewsets.ViewSet):
 
     def list(self, *args, **kwargs):
         members = ProjectMember.objects.all()
-        serializer = ProjectMemberSerializer(members, many=True)
+        serializer = ProjectMemberSerializer(members, many=True, context={'request': self.request})
         return Response (serializer.data, status=200)
 
 
@@ -244,3 +248,16 @@ class AddMemberViewset(AddMemberMixin, viewsets.ViewSet):
 
         self.send_invite(data)
         return Response(data, status=200)
+
+
+class MemberLogsAPI(viewsets.ViewSet):
+    """Member logs
+    """
+    def logs(self, *args, **kwargs):
+        if self.request.user.is_admin:
+            accounts = Account.objects.filter(is_admin=False)
+            logs = Log.objects.filter(member__account__in=accounts)
+            
+            serializer = MemberLogSerializer(logs, many=True, context={'request': self.request})
+            return Response(serializer.data, status=200)
+        return Response(status=401)

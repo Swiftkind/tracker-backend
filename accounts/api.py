@@ -53,8 +53,9 @@ class AccountAPI(ViewSet):
         """all accounts data
         """
         accounts = Account.objects.filter(is_admin=False)
-        serializer = AccountSerializer(accounts, many=True)
+        serializer = AccountSerializer(accounts, many=True, context={'request': self.request})
         return Response(serializer.data, status=200)
+
 
 class LoginAPI(ViewSet):
     """ Login API
