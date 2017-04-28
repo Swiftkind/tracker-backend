@@ -1,0 +1,275 @@
+<div class="container-fluid content hidden-xs">
+    <div class="admin-content">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="#" class="navbar-nav">SwiftTracker</a>
+                    </br>
+                    <div class="user-profile">
+                        <div class="avatar-sm pull-left">
+                            <div class="photo img-circle" style="background-image: url('static/images/sample.png');">
+                            </div>
+                        </div>
+                        <div class="user-profile-detail ">
+                            <span class="profile-detail" uib-dropdown on-toggle="toggled(open)"> 
+                                <a href="" class="text-link" uib-dropdown-toggle>
+                                    <strong>{{ user.first_name }} {{ user.last_name }}<span class="dropdown-icon"><i class="icon ion-chevron-down"></i></span></strong>
+                                </a>
+                                <small><p class="text-muted">Swiftkind</p></small>
+                                <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                                    <li><a href="#" ng-click="logout()" >Logout</a></li>
+                                </ul>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="navbar-right navbar-form">
+                    <div class="input-group">
+                        <input type="text" name="" placeholder="Search" aria-describeby="search" class="form-control">
+                        <span class="input-group-addon" id="search"><i class="icon ion-ios-search-strong"></i></span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+
+            <div class="row form">
+                <div class="col-md-6 col-sm-3">
+                    <div class="dropdown option-dropdown">
+                    <ul>
+                        <li ng-repeat="project in projects"><a href="" ng-click="getMembers(project)">{{project.name}}</a></li>
+                    </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-3" ng-show="project">
+                    <div class="dropdown option-dropdown" ng-show="members">
+                        <h2>{{project.name}}</h2>
+                        <h4>Members List:</h4>
+                        <ul>
+                            <li ng-repeat="account in members">{{account.member.first_name}} {{account.member.last_name}} {{account.member.email}}</li>
+                        </ul>
+                        <h4>Add Member:</h4>
+                        <div>
+                            <label>Add New Email:</label>
+                            <input type="checkbox" ng-model="checkMember"/>
+                            <input type="email" ng-model="project.member.email" ng-if="checkMember" placeholder="Enter email...">
+                            <sc-select
+                                ng-if="!checkMember"
+                                ng-model="project.member"
+                                sc-options="member as member.email for member in filteredMembers"
+                                placeholder="Select or search a person in the list...">
+                            </sc-select>
+
+                            <button ng-click="inviteMember(project)">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row nomargin admin-section">
+                <div class="col-sm-3">
+                    <div class="dropdown option-dropdown">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="option-dropdown">
+                        <label>Select date:</label>
+                        <ob-daterangepicker 
+                            ng-class="{'up': ctrl.dropsUp}" 
+                            class="{{ctrl.opens}}" 
+                            range="ctrl.range" 
+                            format="ctrl.format" 
+                            calendars-always-on="ctrl.calendarsAlwaysOn"
+                            ranges="ctrl.ranges"
+                            on-apply="ctrl.rangeApplied(start, end)"
+                            week-start="ctrl.weekStart"
+                            month-format="ctrl.monthNames">    
+                        </ob-daterangepicker>
+                    </div>
+                </div>
+                <div class="col-sm-3"></div>
+                <div class="col-sm-3">
+                    <div class="option-dropdown">
+                        <label>Member:</label>
+                         <select class="form-control" 
+                                    ng-options="item as item.member.email for item in projectMember track by item.id" 
+                                    ng-model="selectedMember" 
+                                    ng-selected="memberLogs(selectedMember)">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row nomargin admin-section" ng-if="selectedUser.member">
+                <div class="col-md-3 col-sm-7">
+                    <div class="user-profile ">
+                        <div class="avatar-sm pull-left">
+                            <div class="photo img-circle" ng-if="!selectedUser.profile_photo" style="background-image: url('static/images/sample.png');">
+                            </div>
+                            <div class="photo img-circle" ng-if="selectedUser.profile_photo" style="background-image: url({{ selectedUser.profile_photo }});">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-profile-detail">
+                        <span class="profile-detail">
+                            <a href="#" class="text-link" aria-haspopup="true" aria-expanded="true" >
+                                <strong>{{ selectedUser.member.first_name }} {{ selectedUser.member.last_name }} </strong>
+                            </a>
+                            <small class="text-muted"><p>{{ selectedUser.member.email }}</p></small>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-md-offset-6 col-sm-5">
+
+                    <h3 class="nomargin-top">Total Hours: {{ totalHours | duration : 'hh:mm:ss'}}</h3>
+                    <h3></h3>
+
+<!--                     <small><p class="text-muted nomargin">{{ totalHours | duration : 'hh:mm:ss'}} of 80 hours</p></small>
+ -->             </div>
+            </div>
+            <div class="timesheet" ng-if="selectedUser.member">
+                <div class="row hidden-xs">
+                    <div class="col-md-2 col-sm-2">Date:</div>
+                    <div class="col-md-1 col-sm-1">Hours:</div>
+                    <div class="col-md-4 col-sm-5">Log title:</div>
+                    <div class="col-md-1 col-sm-2 text-center">Status:</div>
+                    <div class="col-md-2 col-sm-1">Projects:</div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div ng-repeat="(key, value) in memberLog | groupBy: 'start'"
+                    ng-init="total=[]">
+                    <div class="row row-head">
+                        <div class="col-md-2 col-sm-6 col-xs-6">
+                            <div class="date">
+                                <p>{{ key|date }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-md-offset-8 col-sm-3 col-sm-offset-3 col-xs-6">
+                            <h3>{{ total | toHrs | duration : 'hh:mm:ss'}}</h3>
+                            <small class="text-muted"><p>Daily Total Hours</p></small>
+                        </div>
+                    </div>
+
+                    <div class="row row-content flex" ng-repeat="log in value | filter: dateRangeFilter('start', ctrl.dateStart, ctrl.dateEnd)">
+                        <div class="col-md-2 col-sm-2"></div>
+                        <span ng-init="total.push(log.seconds)">{{ total_sum }}</span>
+                        <p class="visible-xs">Hours:</p>
+                        <div class="col-md-1 col-sm-1 col-xs-12">{{ log.log_field }}</div>
+                        <div class="col-md-4 col-sm-6">
+                            <div>
+                                <p>{{ log.memo }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-1 col-xs-12">
+                         <div class="ad-checkbox">
+                                <label class="control control--checkbox">
+                                <input type="checkbox" ng-model="log.is_approved"/>
+                                <div class="control__indicator"></div>
+                            </label>
+                         </div>
+                        </div>
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <div> 
+                                <p>{{ selectedProject }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+
+<div class="content visible-xs">
+    <div class="admin-content">
+        <div class="sidebar">
+        </div>
+        <div class="container-fluid nopadding">
+            <div class="m-profile-wrapper ">
+                <div class="active" id="employee">
+                    <div class="user-profile">
+                        <div class="avatar-sm align-center">
+                            <div class="photo img-circle" style="background-image: url('images/sample.png');">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h4 class="nomargin">Restie Antiquin</h4>
+                        <small>UI/UX Designer</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row admin-section">
+                <div class="col-xs-6">
+                    <h4 class="nomargin">66:22</h4>
+                    <small class="text-muted">Total Hours</small>
+                </div>
+                <div class="col-xs-6">
+                    <h4 class="nomargin">82%</h4>
+                    <small class="text-muted">66:22  of 80 hours</small>
+                </div>
+                <div class="col-xs-12">
+                    <div class="completion-meter">
+                        <div class="rate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row  row-head">
+                <div class="col-xs-6">
+                    <h4>Jan 13, 2017</h4>
+                    <small class="text-muted">Date</small>
+                </div>
+                <div class="col-xs-6">
+                    <h4>7 H : 25 M</h4>
+                    <small class="text-muted">Daily Total Hours</small>
+                </div>
+            </div>
+            <div class="row  admin-section">
+                <div class="col-xs-12">
+                   
+                    <div class="text-left text-capitalize">
+                     <h4 class=" log-title">Creating design for admin dashboard mobile</h4>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <h4>01:40</h4>
+                    <small class="text-muted">Hours</small>
+                </div>
+                <div class="col-xs-8">
+                    <h4>Swiftkind Internal</h4>
+                    <small class="text-muted">Project</small>
+                </div>
+                <div class="col-xs-10 col-xs-offset-1 status">
+                    <a href="#" class="btn-primary form-control text-center">VERIFY </a>
+                </div>
+            </div>
+            <div class="row admin-section">
+                <div class="col-xs-6">
+                    <h4 class="nomargin">66:22</h4>
+                    <small class="text-muted">Total Hours</small>
+                </div>
+                <div class="col-xs-6">
+                    <h4 class="nomargin">82%</h4>
+                    <small class="text-muted">66:22  of 80 hours</small>
+                </div>
+                <div class="col-xs-12">
+                    <div class="completion-meter">
+                        <div class="rate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row admin-section">
+                <div class="col-xs-6">
+                    <h4>Jan 13, 2017</h4>
+                    <small class="text-muted">Date</small>
+                </div>
+                <div class="col-xs-6">
+                    <h4>7 H : 25 M</h4>
+                    <small class="text-muted">Daily Total Hours</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

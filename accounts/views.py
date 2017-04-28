@@ -78,3 +78,13 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return render(self.request, self.template_name, {
             'projects': projects,
         })
+
+
+class BaseView(TemplateView):
+    """ base view
+    """
+    template_name = 'base.html'
+
+    def get(self, *args, **kwargs):
+        return render(self.request, self.template_name, {})
+

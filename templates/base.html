@@ -1,31 +1,28 @@
-{% load static %}
-
+{% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    <head>
+        <base href="/">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Tracker</title>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiftkind HQ</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/ionicons.min.css' %}">
 
-    {% block css %}{% endblock %}
-</head>
+        <link rel="stylesheet" type="text/css" href="{% static 'dist/css/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'dist/css/vendors.css' %}">
 
-<body>
-    {% if user.is_authenticated %}
-    <h3>Welcome {{ user.email }},</h3>
-    <ul>
-        <li><a href="{% url 'timelog' %}">time log</a></li>
-        {% if request.user.is_superuser %}
-            <li><a href="{% url 'timesheet' %}">timesheet</a></li>
-        {% endif %}
-        <li><a href="{% url 'logout' %}">logout</a></li>
-    </ul>
-    {% endif %}
+    </head>
 
-    {% block content %}{% endblock %}
+    <body ng-app="tracker" id="main-body">
 
-    {% block js %}{% endblock %}
-</body>
+        <data-ui-view></data-ui-view>
 
+        {% block content %}{% endblock %}
+
+        <script src="{% static 'dist/js/vendors.js' %}" type="text/javascript"></script>
+        <script src="{% static 'dist/js/app.js' %}" type="text/javascript"></script>
+    </body>
 </html>

@@ -3,4 +3,4 @@
 *.db
 media/
 local_settings.py
-static/node_modules/
+assets/node_modules/
