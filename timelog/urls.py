@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from accounts.views import DashboardView
+from accounts.views import DashboardView, BaseView
 
 from projects.urls import api_urlpatterns
 from accounts.urls import account_urlpatterns 
@@ -26,7 +26,7 @@ from accounts.urls import account_urlpatterns
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^$', DashboardView.as_view(), name="main"),
+    url(r'^$', BaseView.as_view(), name="base"),
 
     url(r'^', include('accounts.urls')),
     url(r'^projects/', include('projects.urls')),
